@@ -1,0 +1,4 @@
+$active1 = {{color2 | strip}}ee
+$active2 = {{color4 | strip}}ee
+$inactive = {{background | strip}}ee
+

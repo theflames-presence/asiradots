@@ -1,0 +1,17 @@
+#!/bin/bash
+
+WALLPAPER="$1"
+[ -z "$WALLPAPER" ] && { echo "Usage: $0 <wallpaper_path>"; exit 1; }
+[ ! -f "$WALLPAPER" ] && { echo "Error: File '$WALLPAPER' not found"; exit 1; }
+
+
+
+# Set wallpaper with Wallust
+wallust run "$WALLPAPER"
+sleep 0.2
+~/.config/flames/scripts/cava.sh
+killall waybar
+~/.config/waybar/launch.sh
+
+  swww img "$WALLPAPER" --transition-type wipe --transition-duration 0.5  
+

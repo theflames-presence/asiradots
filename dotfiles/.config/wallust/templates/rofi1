@@ -1,0 +1,12 @@
+/**FLAME COLOR SCHEME
+**/
+
+* {
+    bg-image: url("{{wallpaper}}",height);
+    background:     {{background}}80;
+    background-alt: {{color0}};
+    foreground:     {{foreground}};
+    selected:       {{color1}}cc;
+    active:         {{color2}}cc;
+    urgent:         {{color9}};
+}

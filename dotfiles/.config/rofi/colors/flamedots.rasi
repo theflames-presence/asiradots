@@ -1,0 +1,12 @@
+/**FLAME COLOR SCHEME
+**/
+
+* {
+    bg-image: url("/home/aislx/Pictures/NeatureArt.jpg",height);
+    background:     #19161480;
+    background-alt: #45403E;
+    foreground:     #FFF6CD;
+    selected:       #BA4F52cc;
+    active:         #597DABcc;
+    urgent:         #BA4F52;
+}

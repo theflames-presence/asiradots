@@ -1,0 +1,22 @@
+# Official Packages
+hyprland
+waybar
+rofi
+cava
+rofimoji
+kitty
+neovim
+firefox
+thunar
+fzf
+inotify-tools
+xclip
+swaync
+swayosd
+fastfetch
+wallust
+nwg-look
+
+# AUR Packages
+gum
+tty-clock
