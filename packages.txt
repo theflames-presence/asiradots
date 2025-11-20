@@ -16,7 +16,21 @@ swayosd
 fastfetch
 wallust
 nwg-look
+hyprshell
+zsh
+hyprlandpolkitagent
+pipewire
+wireplumber
+xdg-desktop-portal-hyprland
+pavucontrol
+bluez
+swww
+zsh-syntax-highlighting
+zsh-autosuggestions
+zsh-history-substring-search
+
 
 # AUR Packages
 gum
 tty-clock
+pokemon-colorscripts-git

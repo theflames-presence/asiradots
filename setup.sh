@@ -206,6 +206,13 @@ if gum confirm "Enable services and reboot system?"; then
 ██║  ██║███████╗██████╔╝╚██████╔╝╚██████╔╝   ██║   
 ╚═╝  ╚═╝╚══════╝╚═════╝  ╚═════╝  ╚═════╝    ╚═╝   
 "
+reboot_system() {
+    systemctl enable sddm
+    systemctl enable networkmanager
+    systemctl enable blueman
+    echo "Rebooting the system"
+    reboot
+}
     reboot_system
 else
     echo "Skipping reboot..."
@@ -220,10 +227,4 @@ else
     echo "Setup complete!"
 fi
 
-reboot_system() {
-    systemctl enable sddm
-    systemctl enable networkmanager
-    systemctl enable blueman
-    echo "Rebooting the system"
-    reboot
-}
+
