@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Exit on any error
+set -e
+
+# Check if running on Arch Linux
+if ! command -v pacman &> /dev/null; then
+    echo "Error: This script is designed for Arch Linux systems with pacman."
+    exit 1
+fi
+
+sudo pacman -Sy gum fzf
+
 echo "
 ███████╗██╗      █████╗ ███╗   ███╗███████╗    ██████╗  ██████╗ ████████╗███████╗
 ██╔════╝██║     ██╔══██╗████╗ ████║██╔════╝    ██╔══██╗██╔═══██╗╚══██╔══╝██╔════╝
@@ -115,8 +126,16 @@ if gum confirm "Install packages from packages.txt?"; then
 "
 
     # Read packages from file
-    official_packages=($(grep -v "^#" packages.txt | grep -A 1000 "# Official Packages" | grep -B 1000 "# AUR Packages" | grep -v "^#" | grep -v "^$"))
-    aur_packages=($(grep -v "^#" packages.txt | grep -A 1000 "# AUR Packages" | grep -v "^#" | grep -v "^$"))
+    if [ ! -f "packages.txt" ]; then
+        echo "Error: packages.txt not found!"
+        return 1
+    fi
+    
+    # Get official packages (between "# Official Packages" and "# AUR Packages")
+    official_packages=($(sed -n '/# Official Packages/,/# AUR Packages/p' packages.txt | grep -v "^#" | grep -v "^$"))
+    
+    # Get AUR packages (after "# AUR Packages")
+    aur_packages=($(sed -n '/# AUR Packages/,$p' packages.txt | grep -v "^#" | grep -v "^$"))
 
     all_packages=("${official_packages[@]}" "${aur_packages[@]}")
     total=${#all_packages[@]}
@@ -131,7 +150,11 @@ if gum confirm "Install packages from packages.txt?"; then
             $(printf "#%.0s" $(seq 1 $((progress / 2)))) \
             $progress $current $total $package
         
-        yay -S --noconfirm --needed "$package" &>/dev/null
+        if yay -S --noconfirm --needed "$package"; then
+            echo " ✓"
+        else
+            echo " ✗ Failed to install $package"
+        fi
     done
 else
     echo "Skipping package installation..."
@@ -172,49 +195,7 @@ else
     echo "Skipping Zsh setup...."
 fi
 
-install_zshplugins() {
-    sudo rm -rf ~/.oh-my-zsh
-    CHSH=no RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    touch ~/.zshrc
-    echo "Installing plugins"
-    sed -i '/^plugins=/,/)/c\plugins=(\n  git\n  zsh-autosuggestions\n  zsh-syntax-highlighting\n  zsh-history-substring-search)' ~/.zshrc
-    echo "Setup pokemon colorscripts"
-    if ! grep -q "pokemon-colorscripts -r" ~/.zshrc; then
-        sed -i '1s/^/pokemon-colorscripts -r\n/' ~/.zshrc
-    fi
-    
-    if [ -d "~/powerlevel10k" ]; then
-        sudo rm -r ~/powerlevel10k
-    fi
-    
-    if [ -d "~/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
-        sudo rm -r ~/.oh-my-zsh/custom/themes/powerlevel10k
-    fi
-    
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
-    sed -i 's|ZSH_THEME="robbyrussell"|ZSH_THEME="powerlevel10k/powerlevel10k"|g' ~/.zshrc
-    
-    LINES_TO_ADD=(
-        'source ~/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme'
-        'source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh'
-        'source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh'
-        'source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh'
-        'typeset -g POWERLEVEL9K_INSTANT_PROMPT=off'
-    )
-    
-    for add_line in "${LINES_TO_ADD[@]}"; do
-        grep -qxF "$add_line" ~/.zshrc || echo "$add_line" >> ~/.zshrc
-    done
-    
-    chsh -s $(which zsh)
-    
-    if [ -f "./dotfiles/.zshrc" ]; then
-        cp ./dotfiles/.zshrc ~/.zshrc
-    fi
-    if [ -f "./dotfiles/.p10k.zsh" ]; then
-        cp ./dotfiles/.p10k.zsh ~/.p10k.zsh
-    fi
-}
+
 
 if gum confirm "Enable services and reboot system?"; then
     echo "
